@@ -1504,7 +1504,7 @@ h1, h2, h3 {
 }
 .vip-plato {
   display: grid;
-  grid-template-columns: 92px 1fr;
+  grid-template-columns: 92px minmax(0, 1fr);
   gap: 22px;
   align-items: center;
 }
@@ -1540,7 +1540,7 @@ h1, h2, h3 {
   .vip__foto { max-width: 440px; width: 100%; margin-inline: auto; }
   .cafe__listas { grid-template-columns: 1fr 1fr; }
   .impresas__fila { grid-template-columns: repeat(3, 1fr); }
-  .vip-carta__lista { grid-template-columns: 1fr; }
+  .vip-carta__lista { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 680px) {
   .menu-dia { grid-template-columns: 1fr; text-align: center; }
@@ -1551,8 +1551,11 @@ h1, h2, h3 {
   .cafe__oferta strong { grid-column: 2; }
   .impresas__fila { grid-template-columns: 1fr 1fr; gap: 10px; }
   .vip__rasgos { grid-template-columns: 1fr; }
-  .vip-plato { grid-template-columns: 70px 1fr; gap: 16px; }
-  .vip-plato .medallon { width: 70px; }
+  .vip-carta { padding-inline: 18px; }
+  .vip-plato { grid-template-columns: 58px minmax(0, 1fr); gap: 14px; }
+  .vip-plato .medallon { width: 58px; }
+  .vip-plato h4 { font-size: 1rem; letter-spacing: 0.03em; }
+  .vip-plato .plato__cabeza { flex-wrap: wrap; row-gap: 4px; }
   .avisos { flex-direction: column; align-items: center; gap: 10px; }
 }
 
