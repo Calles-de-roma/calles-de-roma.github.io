@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cócteles de la casa · Calles de Roma</title>
+<meta name="description" content="Los cócteles de Calles de Roma: Spritz, Negroni y Bellini en 3D. Gíralos y descubre qué lleva cada uno.">
+<meta name="theme-color" content="#0a0907">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230b0a08'/%3E%3Ccircle cx='32' cy='32' r='27' fill='none' stroke='%23c9a45c' stroke-width='2'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-family='Georgia,serif' font-size='24' fill='%23e8cf8f'%3ECR%3C/text%3E%3C/svg%3E">
+<!-- Cócteles en 3D de verdad (Three.js r128 + GSAP 3.12.5, por CDN), con la misma estética que bebidas-lata.html.
+     Cada copa está construida en el código: cristal, líquido, hielo, burbujas y guarnición. Se arrastran para girarlos. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@400;500;600&display=swap">
+<style>
+:root{--ink:#0a0907;--line:#2a2318;--gold:#c9a45c;--gold-hi:#ecd49a;--cream:#efe6d2;--muted:#a09580;
+  --f-display:'Cinzel',Georgia,serif;--f-body:'Cormorant Garamond',Georgia,serif;--f-ui:'Jost','Helvetica Neue',Arial,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--ink);color:var(--cream);font-family:var(--f-body);font-size:20px;line-height:1.55;overflow:hidden}
+[hidden]{display:none!important}
+p{margin:0}
+button{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold-hi);outline-offset:3px}
+h1{font-family:var(--f-display);font-weight:500;margin:0;text-transform:uppercase;letter-spacing:.04em}
+.eyebrow{font-family:var(--f-ui);font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:14px}
+.eyebrow::after{content:"";width:34px;height:1px;background:var(--gold);opacity:.6}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--f-ui);font-weight:500;font-size:11px;letter-spacing:.24em;text-transform:uppercase;padding:14px 22px;border:1px solid var(--gold);color:var(--gold-hi);background:rgba(10,9,7,.5);cursor:pointer;text-decoration:none;transition:background .3s,color .3s}
+.btn:hover{background:var(--gold);color:var(--ink)}
+.btn svg{width:16px;height:16px}
+
+/* ---------- Escena ---------- */
+#bar{position:fixed;inset:0;overflow:hidden;background:radial-gradient(60% 75% at 66% 50%,var(--glow,#3a1a08) 0%,#080706 72%);transition:background 1s}
+#can{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab;display:block}
+#can.drag{cursor:grabbing}
+.plano{position:absolute;right:8%;top:50%;transform:translateY(-50%);height:min(62vh,560px);width:auto}
+
+/* ---------- Textos ---------- */
+.bar-top{position:absolute;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top,0px) + 18px) max(20px,env(safe-area-inset-right,0px)) 0 max(20px,env(safe-area-inset-left,0px));display:flex;justify-content:space-between;align-items:center;gap:16px;pointer-events:none;z-index:3}
+.bar-top>*{pointer-events:auto}
+.marca{font-family:var(--f-display);font-size:18px;letter-spacing:.14em;color:var(--gold-hi);text-decoration:none;line-height:1}
+.marca small{display:block;margin-top:6px;font-family:var(--f-ui);font-size:9px;letter-spacing:.5em;color:var(--muted)}
+.bar-info{position:absolute;left:max(40px,env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%);width:min(440px,36vw);display:grid;gap:18px;z-index:2;pointer-events:none}
+.bar-info h1{font-size:clamp(40px,6vw,84px);line-height:.95;letter-spacing:.05em}
+.bar-info h1 em{display:block;font-family:var(--f-body);font-style:italic;text-transform:none;letter-spacing:0;font-weight:400;font-size:.5em;color:var(--accent,var(--gold-hi));margin-top:.1em}
+.precio{font-family:var(--f-display);font-size:22px;color:var(--gold-hi);letter-spacing:.06em}
+.now{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;min-height:96px;border-block:1px solid rgba(239,230,210,.18);padding-block:14px}
+.now .pct{font-family:var(--f-display);font-size:clamp(46px,6vw,76px);line-height:1;color:var(--accent,var(--gold-hi));min-width:2.2ch;font-variant-numeric:tabular-nums}
+.now strong{display:block;font-family:var(--f-display);font-weight:500;letter-spacing:.1em;text-transform:uppercase;font-size:20px}
+.now span{display:block;font-size:19px;color:var(--cream);opacity:.8;line-height:1.3;font-style:italic}
+.now.swap .pct,.now.swap div{animation:swap .5s}
+@keyframes swap{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.mix{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.mix li{display:grid;grid-template-columns:minmax(0,1fr) 42px;gap:4px 12px;align-items:center;font-family:var(--f-ui);font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:.5;transition:opacity .4s}
+.mix li.on{opacity:1}
+.mix i{grid-column:1/-1;display:block;height:2px;background:rgba(239,230,210,.15);position:relative}
+.mix i b{position:absolute;inset:0 auto 0 0;background:var(--accent,var(--gold));transition:width .6s}
+.mix em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums}
+.gar{font-size:18px;color:var(--cream);opacity:.78}
+.gar b{font-family:var(--f-ui);font-weight:500;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:2px}
+.bar-bottom{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);display:grid;gap:16px;justify-items:center;pointer-events:none;padding-inline:max(16px,env(safe-area-inset-left,0px));z-index:3}
+.hint{font-family:var(--f-ui);font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px}
+.hint::before,.hint::after{content:"\2194";color:var(--gold);font-size:14px;letter-spacing:0}
+.dtabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;pointer-events:auto}
+.dtab{background:rgba(10,9,7,.6);border:1px solid var(--line);color:var(--cream);padding:12px 20px;cursor:pointer;font-family:var(--f-ui);font-size:11px;letter-spacing:.22em;text-transform:uppercase;transition:border-color .3s,background .3s,color .3s}
+.dtab:hover{border-color:var(--gold)}
+.dtab[aria-selected=true]{border-color:var(--gold);background:var(--gold);color:var(--ink)}
+
+@media(max-width:860px){
+  #bar{background:radial-gradient(80% 50% at 50% 34%,var(--glow,#3a1a08) 0%,#080706 75%)}
+  .plano{right:50%;transform:translateX(50%);top:70px;height:44svh}
+  .bar-info{left:max(20px,env(safe-area-inset-left,0px));right:max(20px,env(safe-area-inset-right,0px));top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 84px);transform:none;width:auto;gap:10px}
+  .bar-info h1{font-size:clamp(30px,9vw,44px)}
+  .bar-info h1 em{display:inline;margin-left:.3em}
+  .mix,.gar,.bar-info .eyebrow,.hint{display:none}
+  .now{min-height:0;padding-block:10px}
+  .now .pct{font-size:44px}
+  .now span{font-size:17px}
+  .precio{font-size:18px}
+  .dtab{padding:12px 14px;font-size:10px;letter-spacing:.16em}
+  .btn{padding:12px 14px}
+  .btn .largo{display:none}
+}
+</style>
+</head>
+<body>
+<div id="bar">
+  <canvas id="can" aria-label="Cóctel en 3D. Arrastra para girarlo."></canvas>
+  <!-- Solo si el navegador no puede mostrar 3D -->
+  <img class="plano" id="plano" src="img/cocteles/spritz.png" alt="" hidden>
+
+  <div class="bar-top">
+    <a class="marca" href="index.html">Calles de Roma<small>Restaurante F.S.</small></a>
+    <a class="btn" href="index.html#carta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Volver<span class="largo">&nbsp;a la carta</span></a>
+  </div>
+
+  <div class="bar-info">
+    <div class="eyebrow" id="iTag"></div>
+    <h1 id="iName"></h1>
+    <p class="precio" id="iPrecio"></p>
+    <div class="now" id="iNow"><div class="pct" id="iPct"></div><div><strong id="iIng"></strong><span id="iDesc"></span></div></div>
+    <ul class="mix" id="iMix"></ul>
+    <p class="gar" id="iGar"></p>
+  </div>
+
+  <div class="bar-bottom">
+    <div class="hint">Arrastra para girar</div>
+    <div class="dtabs" id="dtabs" role="tablist" aria-label="Cócteles"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+var mobile=function(){return innerWidth<=860};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+/* ================= LOS CÓCTELES ================= */
+var COCTELES=[
+ {id:'spritz',name:'Spritz',sub:'Aperol',precio:'10 €',tag:'El aperitivo de las seis de la tarde',abv:'≈ 8 % vol.',accent:'#ffd49a',glow:'#5a2308',plano:'img/cocteles/spritz.png',
+  ing:[['Prosecco',50,'Burbujas secas del Véneto'],['Aperol',33,'Naranja amarga y ruibarbo'],['Soda',17,'El toque ligero final']],
+  gar:'Rodaja de naranja y mucho hielo. Sin remover demasiado.'},
+ {id:'negroni',name:'Negroni',sub:'Classico',precio:'12 €',tag:'Amargo, rojo y sin prisa',abv:'≈ 24 % vol.',accent:'#f2b79c',glow:'#431018',plano:'img/cocteles/negroni.png',
+  ing:[['Gin',33,'Seco, con enebro'],['Vermut rojo',33,'Dulce y especiado'],['Campari',34,'Amargo y cítrico']],
+  gar:'Piel de naranja. Partes iguales sobre hielo grande, removido.'},
+ {id:'bellini',name:'Bellini',sub:'di Venezia',precio:'10 €',tag:'Nació en Venecia, en el Harry’s Bar',abv:'≈ 7 % vol.',accent:'#ffc9a6',glow:'#4a2210',plano:'img/cocteles/bellini.png',
+  ing:[['Prosecco',66,'Frío, de Valdobbiadene'],['Melocotón blanco',34,'Puré de fruta madura']],
+  gar:'En copa de flauta bien fría, con un gajo de melocotón.'}
+];
+var bar=$('#bar');
+var S={cur:0,k:-1,ang:.5,vel:0,drag:false,idle:0,tiltU:0,
+  // movimiento automático (lo anima GSAP): inclinación, altura, cercanía
+  mov:{tilt:.12,lift:0,near:0,spin:0}};
+
+/* ================= TEXTOS ================= */
+function renderTabs(){
+  $('#dtabs').innerHTML=COCTELES.map(function(d,i){return '<button class="dtab" role="tab" data-i="'+i+'" aria-selected="'+(i===S.cur)+'">'+esc(d.name)+'</button>'}).join('');
+}
+function fase(k){
+  var d=COCTELES[S.cur];k=((k%(d.ing.length+1))+(d.ing.length+1))%(d.ing.length+1);if(k===S.k)return;S.k=k;
+  if(k===0){$('#iPct').textContent=d.abv.replace(' vol.','').replace('≈ ','≈');$('#iIng').textContent='Graduación';$('#iDesc').textContent='Gira la copa para ver qué lleva.'}
+  else{var it=d.ing[k-1];$('#iPct').textContent=it[1]+'%';$('#iIng').textContent=it[0];$('#iDesc').textContent=it[2]}
+  var now=$('#iNow');now.classList.remove('swap');void now.offsetWidth;now.classList.add('swap');
+  Array.prototype.forEach.call(document.querySelectorAll('#iMix li'),function(li,i){li.classList.toggle('on',k===0||i===k-1)});
+}
+function pintarInfo(){
+  var d=COCTELES[S.cur];
+  bar.style.setProperty('--glow',d.glow);bar.style.setProperty('--accent',d.accent);
+  $('#iTag').textContent=d.tag;
+  $('#iName').innerHTML=esc(d.name)+'<em>'+esc(d.sub)+'</em>';
+  $('#iPrecio').textContent=d.precio;
+  $('#iMix').innerHTML=d.ing.map(function(it){return '<li><span>'+esc(it[0])+'</span><em>'+it[1]+'%</em><i><b style="width:'+it[1]*1.5+'%"></b></i></li>'}).join('');
+  $('#iGar').innerHTML='<b>Para acabar</b>'+esc(d.gar);
+  document.title=d.name+' '+d.sub+' · Cócteles · Calles de Roma';
+  renderTabs();S.k=-1;fase(0);
+}
+
+/* ================= 3D ================= */
+var T=window.THREE,R={};
+function sin3D(){
+  // Sin WebGL: se enseña la foto plana del cóctel
+  $('#can').hidden=true;var p=$('#plano');p.hidden=false;p.src=COCTELES[S.cur].plano;$('.hint').hidden=true;
+}
+
+/* --- utilidades de forma --- */
+function V(p){return p.map(function(q){return new T.Vector2(q[0],q[1])})}
+// radio interior de la copa a una altura y (interpola el perfil interior)
+function radioEn(perfil,y){
+  for(var i=0;i<perfil.length-1;i++){var a=perfil[i],b=perfil[i+1];
+    if((y>=a[1]&&y<=b[1])||(y<=a[1]&&y>=b[1])){var t=(y-a[1])/((b[1]-a[1])||1);return a[0]+(b[0]-a[0])*t}}
+  return perfil[perfil.length-1][0];
+}
+// volumen de líquido que llena el interior desde abajo hasta 'arriba'
+function liquido(interior,abajo,arriba,enc){
+  var pts=[[0,abajo]],n=28;
+  for(var i=0;i<=n;i++){var y=abajo+(arriba-abajo)*i/n;pts.push([Math.max(.001,radioEn(interior,y)*(enc||.975)),y])}
+  pts.push([0,arriba]);return new T.LatheGeometry(V(pts),72);
+}
+function texturaCitrico(piel,pulpa,blanco){
+  var c=document.createElement('canvas');c.width=c.height=512;var g=c.getContext('2d'),m=256;
+  g.fillStyle=piel;g.beginPath();g.arc(m,m,256,0,7);g.fill();
+  g.fillStyle=blanco;g.beginPath();g.arc(m,m,226,0,7);g.fill();
+  var gajos=11;
+  for(var i=0;i<gajos;i++){
+    var a0=i/gajos*Math.PI*2+.03,a1=(i+1)/gajos*Math.PI*2-.03;
+    var gr=g.createRadialGradient(m,m,20,m,m,215);gr.addColorStop(0,'#fff3c9');gr.addColorStop(.25,pulpa);gr.addColorStop(1,pulpa);
+    g.fillStyle=gr;g.beginPath();g.moveTo(m+Math.cos((a0+a1)/2)*22,m+Math.sin((a0+a1)/2)*22);g.arc(m,m,212,a0,a1);g.closePath();g.fill();
+    // celdillas de jugo
+    g.strokeStyle='rgba(255,255,255,.18)';g.lineWidth=2;
+    for(var r=60;r<205;r+=22){g.beginPath();g.arc(m,m,r,a0+.05,a1-.05);g.stroke()}
+  }
+  g.fillStyle=blanco;g.beginPath();g.arc(m,m,22,0,7);g.fill();
+  var t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;return t;
+}
+function texturaMelocoton(){
+  var c=document.createElement('canvas');c.width=c.height=512;var g=c.getContext('2d');
+  var gr=g.createRadialGradient(256,256,30,256,256,256);gr.addColorStop(0,'#ffe2a3');gr.addColorStop(.55,'#ffb85c');gr.addColorStop(.86,'#f59a3f');gr.addColorStop(.93,'#d5452c');gr.addColorStop(1,'#9c2a22');
+  g.fillStyle=gr;g.fillRect(0,0,512,512);
+  var t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;return t;
+}
+
+/* --- materiales --- */
+// Los colores se escriben en sRGB (como en CSS) y se pasan al espacio lineal que usa Three.js
+function lin(c){return new T.Color(c).convertSRGBToLinear()}
+function matCristal(lado,brillo){
+  // Cristal "aditivo": no tapa el color de lo que hay detrás, solo suma reflejos.
+  // El reflejo es más fuerte en los bordes (como el cristal de verdad).
+  return new T.MeshPhysicalMaterial({color:0x000000,metalness:0,roughness:.04,transparent:true,blending:T.AdditiveBlending,
+    envMapIntensity:brillo,clearcoat:1,clearcoatRoughness:.03,side:lado,depthWrite:false});
+}
+function matLiquido(color,opacidad){
+  var c=lin(color);
+  return new T.MeshStandardMaterial({color:c,emissive:c.clone().multiplyScalar(.3),metalness:0,roughness:.3,
+    transparent:true,opacity:opacidad,envMapIntensity:.25,side:T.DoubleSide,depthWrite:false});
+}
+var matHielo=function(){return new T.MeshPhysicalMaterial({color:lin(0xe8f4ff),metalness:0,roughness:.12,transparent:true,opacity:.28,envMapIntensity:1.2,clearcoat:1,depthWrite:false})};
+
+/* --- piezas --- */
+function cristal(perfil,grupo){
+  var geo=new T.LatheGeometry(V(perfil),96);
+  var atras=new T.Mesh(geo,matCristal(T.BackSide,.14));atras.renderOrder=3;
+  var delante=new T.Mesh(geo,matCristal(T.FrontSide,.32));delante.renderOrder=5;
+  grupo.add(atras,delante);
+}
+function hielo(tam,x,y,z,grupo){
+  var m=new T.Mesh(new T.BoxGeometry(tam,tam,tam),matHielo());
+  m.position.set(x,y,z);m.rotation.set(Math.random()*1.2,Math.random()*1.2,Math.random()*.8);m.renderOrder=1;grupo.add(m);
+}
+function rodaja(radio,grosor,tex,piel){
+  var lado=new T.MeshStandardMaterial({color:lin(piel),roughness:.55,envMapIntensity:.3});
+  var cara=new T.MeshStandardMaterial({map:tex,roughness:.45,envMapIntensity:.3});
+  var m=new T.Mesh(new T.CylinderGeometry(radio,radio,grosor,56),[lado,cara,cara]);
+  return m;
+}
+function burbujas(interior,abajo,arriba,n,grupo){
+  var pos=new Float32Array(n*3),vel=[];
+  for(var i=0;i<n;i++){var y=abajo+Math.random()*(arriba-abajo),r=radioEn(interior,y)*.8*Math.sqrt(Math.random()),a=Math.random()*6.28;
+    pos[i*3]=Math.cos(a)*r;pos[i*3+1]=y;pos[i*3+2]=Math.sin(a)*r;vel.push(.004+Math.random()*.01)}
+  var geo=new T.BufferGeometry();geo.setAttribute('position',new T.BufferAttribute(pos,3));
+  var p=new T.Points(geo,new T.PointsMaterial({color:0xfff6e6,size:.045,transparent:true,opacity:.75,depthWrite:false}));
+  p.renderOrder=4;p.userData={vel:vel,abajo:abajo,arriba:arriba,interior:interior};grupo.add(p);return p;
+}
+
+/* --- las tres copas --- */
+var CONSTRUIR={
+  spritz:function(){
+    var g=new T.Group();
+    // copa de balón: pie, tallo y cáliz (perfil exterior, borde, perfil interior)
+    var ext=[[0,-2],[.85,-2],[.87,-1.97],[.55,-1.93],[.1,-1.86],[.065,-1.6],[.065,-.55],[.13,-.38],[.46,-.2],[.82,.1],[1.02,.5],[1.08,.9],[1.04,1.4],[.94,1.9],[.92,1.94]];
+    var dentro=[[.9,1.92],[1.01,1.4],[1.05,.9],[.99,.5],[.79,.12],[.44,-.16],[.12,-.31],[0,-.33]];
+    cristal(ext.concat(dentro),g);
+    var intAsc=dentro.slice().reverse();
+    var liq=new T.Mesh(liquido(intAsc,-.32,1.12),matLiquido('#e5420a',.9));liq.renderOrder=2;g.add(liq);
+    hielo(.5,-.35,.75,.2,g);hielo(.46,.3,.95,-.25,g);hielo(.42,.1,.45,.35,g);hielo(.44,-.15,1.05,-.4,g);
+    var r=rodaja(.52,.07,texturaCitrico('#ec7a12','#ff9f2e','#fff1d6'),'#ec7a12');
+    r.rotation.set(Math.PI/2,0,.25);r.position.set(.05,.82,.55);r.renderOrder=0;g.add(r);
+    g.userData.burbujas=burbujas(intAsc,-.25,1.08,70,g);
+    g.userData.escala=1;g.userData.centroY=-.05;
+    return g;
+  },
+  negroni:function(){
+    var g=new T.Group();
+    // vaso bajo de fondo grueso
+    var ext=[[0,-1.2],[1,-1.2],[1.04,-1.16],[1.06,-1],[1.17,1.12],[1.16,1.17]];
+    var dentro=[[1.12,1.17],[1.11,1.12],[1.01,-.82],[.96,-.88],[0,-.88]];
+    cristal(ext.concat(dentro),g);
+    var intAsc=dentro.slice().reverse();
+    var liq=new T.Mesh(liquido(intAsc,-.87,.72),matLiquido('#7e0814',.93));liq.renderOrder=2;g.add(liq);
+    hielo(.95,-.05,-.05,.05,g);hielo(.62,.38,.55,-.3,g);
+    // rodaja de naranja encajada en el borde
+    var r=rodaja(.6,.08,texturaCitrico('#ec7a12','#ffa033','#fff1d6'),'#ec7a12');
+    r.rotation.set(Math.PI/2,0,.35);r.position.set(.62,1.18,.42);r.renderOrder=0;g.add(r);
+    // piel de naranja en espiral cayendo por fuera
+    var pts=[];for(var i=0;i<=40;i++){var t=i/40,a=t*Math.PI*5;pts.push(new T.Vector3(-1.05-.22*Math.sin(t*Math.PI)+Math.cos(a)*.16,1.2-1.7*t,Math.sin(a)*.16+.25))}
+    var piel=new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts),120,.055,8,false),new T.MeshStandardMaterial({color:lin(0xe8740f),roughness:.5,envMapIntensity:.3,emissive:lin(0x3a1200)}));
+    piel.scale.set(1,1,.6);g.add(piel);
+    g.userData.escala=1.18;g.userData.centroY=0;
+    return g;
+  },
+  bellini:function(){
+    var g=new T.Group();
+    // copa de flauta
+    var ext=[[0,-2.3],[.62,-2.3],[.64,-2.27],[.36,-2.22],[.08,-2.12],[.05,-1.9],[.05,-.75],[.1,-.6],[.3,-.42],[.42,.2],[.45,1],[.445,1.8],[.425,2.2],[.41,2.24]];
+    var dentro=[[.395,2.22],[.41,2.2],[.425,1.8],[.43,1],[.4,.2],[.27,-.38],[.08,-.54],[0,-.56]];
+    cristal(ext.concat(dentro),g);
+    var intAsc=dentro.slice().reverse();
+    var liq=new T.Mesh(liquido(intAsc,-.55,1.72),matLiquido('#ea7840',.95));liq.renderOrder=2;g.add(liq);
+    var esp=new T.Mesh(liquido(intAsc,1.72,1.9,.97),matLiquido('#f9d2b4',.92));esp.renderOrder=2;g.add(esp);
+    // gajo de melocotón en el borde
+    var tex=texturaMelocoton();
+    var gajo=new T.Mesh(new T.CylinderGeometry(.5,.5,.16,40,1,false,0,Math.PI),[
+      new T.MeshStandardMaterial({color:lin(0xb5322a),roughness:.6,envMapIntensity:.3}),new T.MeshStandardMaterial({map:tex,roughness:.5,envMapIntensity:.3}),new T.MeshStandardMaterial({map:tex,roughness:.5,envMapIntensity:.3})]);
+    gajo.rotation.set(Math.PI/2,0,Math.PI*.9);gajo.position.set(.36,2.28,.08);g.add(gajo);
+    g.userData.burbujas=burbujas(intAsc,-.4,1.68,55,g);
+    g.userData.escala=.88;g.userData.centroY=-.05;
+    return g;
+  }
+};
+
+function init3D(){
+  if(!T){sin3D();return false}
+  var canvas=$('#can'),renderer;
+  try{renderer=new T.WebGLRenderer({canvas:canvas,antialias:true,alpha:true})}catch(e){sin3D();return false}
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+  renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.NoToneMapping; // sin filtro de tono: los rojos y naranjas salen tal cual
+  var scene=new T.Scene(),cam=new T.PerspectiveCamera(30,1,.1,100);cam.position.set(0,0,13.5);
+  // entorno de luz (paneles luminosos que se reflejan en el cristal), como en la lata
+  var env=new T.Scene();
+  function caja(w,h,x,y,z,c,i){var m=new T.Mesh(new T.BoxGeometry(w,h,.2),new T.MeshBasicMaterial({color:new T.Color(c).multiplyScalar(i)}));m.position.set(x,y,z);m.lookAt(0,0,0);env.add(m)}
+  env.add(new T.Mesh(new T.SphereGeometry(30,16,16),new T.MeshBasicMaterial({color:0x0a0908,side:T.BackSide})));
+  caja(16,3,0,10,2,0xffffff,5);caja(2.4,14,-9,0,3,0xfff0d8,6);caja(2.4,14,9,0,2,0xffe0b0,5);caja(14,2,0,-8,6,0xffd9a0,2.2);caja(3,10,0,0,-10,0xffffff,2);caja(1.2,10,4,0,9,0xffffff,4);
+  scene.environment=new T.PMREMGenerator(renderer).fromScene(env,.02).texture;
+  scene.add(new T.AmbientLight(0xffffff,.45));
+  var key=new T.DirectionalLight(0xfff0d8,1.3);key.position.set(4,6,8);scene.add(key);
+  var contra=new T.PointLight(0xffb070,1.2,30);contra.position.set(-3,2,-5);scene.add(contra);
+
+  var holder=new T.Group();scene.add(holder);
+  // sombra suave en el suelo
+  var sc=document.createElement('canvas');sc.width=sc.height=128;var sg=sc.getContext('2d');var sgr=sg.createRadialGradient(64,64,0,64,64,64);sgr.addColorStop(0,'rgba(0,0,0,.55)');sgr.addColorStop(1,'rgba(0,0,0,0)');sg.fillStyle=sgr;sg.fillRect(0,0,128,128);
+  var sombra=new T.Mesh(new T.PlaneGeometry(4,1.2),new T.MeshBasicMaterial({map:new T.CanvasTexture(sc),transparent:true,depthWrite:false}));
+  scene.add(sombra);
+
+  var W=1,H=1,halfW=6;
+  R.resize=function(){W=innerWidth;H=innerHeight;renderer.setSize(W,H,false);cam.aspect=W/H;cam.updateProjectionMatrix();halfW=Math.tan(cam.fov*Math.PI/360)*13.5*cam.aspect};
+  R.resize();addEventListener('resize',R.resize);
+
+  R.poner=function(i){
+    if(R.copa){holder.remove(R.copa);R.copa.traverse(function(o){if(o.geometry)o.geometry.dispose()})}
+    R.copa=CONSTRUIR[COCTELES[i].id]();holder.add(R.copa);
+  };
+
+  /* arrastrar para girar */
+  var lastX=0,lastY=0;
+  canvas.addEventListener('pointerdown',function(e){S.drag=true;S.idle=0;lastX=e.clientX;lastY=e.clientY;canvas.classList.add('drag');try{canvas.setPointerCapture(e.pointerId)}catch(x){}});
+  canvas.addEventListener('pointermove',function(e){
+    if(!S.drag)return;var dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;
+    S.ang+=dx*.012;S.vel=dx*.012;S.tiltU=Math.max(-.35,Math.min(.45,S.tiltU+dy*.004));S.idle=0;
+  });
+  function up(){S.drag=false;canvas.classList.remove('drag')}
+  canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
+
+  var reloj=new T.Clock();
+  R.frame=function(){
+    requestAnimationFrame(R.frame);
+    var dt=Math.min(reloj.getDelta(),.05),t=reloj.elapsedTime,m=mobile();
+    if(!S.drag){
+      S.ang+=S.vel;S.vel*=.94;if(Math.abs(S.vel)<.0004)S.vel=0;
+      S.idle+=dt;if(!reduce)S.ang-=(S.idle>1.5?.006:0)+S.mov.spin*dt;
+      S.tiltU*=.96;
+    }
+    if(R.copa){
+      var e=R.copa.userData.escala||1;
+      R.copa.rotation.y=S.ang;
+      R.copa.scale.setScalar(e);
+      R.copa.position.y=-(R.copa.userData.centroY||0)*e;
+      var b=R.copa.userData.burbujas;
+      if(b&&!reduce){var p=b.geometry.attributes.position.array,u=b.userData;
+        for(var i=0;i<u.vel.length;i++){p[i*3+1]+=u.vel[i];if(p[i*3+1]>u.arriba){p[i*3+1]=u.abajo;var r=radioEn(u.interior,u.abajo)*.6*Math.random(),a=Math.random()*6.28;p[i*3]=Math.cos(a)*r;p[i*3+2]=Math.sin(a)*r}}
+        b.geometry.attributes.position.needsUpdate=true}
+    }
+    // el giro decide qué ingrediente se enseña
+    var n=COCTELES[S.cur].ing.length+1,uu=((-S.ang/(Math.PI*2))%1+1)%1;fase(Math.floor(uu*n));
+    holder.rotation.x=S.mov.tilt+S.tiltU;
+    holder.position.x=m?0:halfW*.34;
+    holder.position.y=(m?1.15:0)+S.mov.lift+Math.sin(t*.9)*.05;
+    holder.position.z=S.mov.near;
+    var base=m?.78:1.08;holder.scale.setScalar(base);
+    sombra.position.set(holder.position.x,(m?1.15:0)-2.45*base,-.5);sombra.scale.setScalar(base*(1-S.mov.lift*.15));
+    sombra.material.opacity=Math.max(0,1-Math.max(0,S.mov.lift)*.4);
+    renderer.render(scene,cam);
+  };
+  return true;
+}
+
+/* ================= COREOGRAFÍA ================= */
+// baja desde arriba -> sube y se ve desde arriba -> gira y gana perspectiva -> gira más hacia abajo -> otra vez
+var bucle=null;
+function crearBucle(){
+  var e='sine.inOut',M=S.mov;
+  return gsap.timeline({repeat:-1})
+    .to(M,{tilt:.5,lift:.4,near:-.6,spin:.15,duration:2.4,ease:e})            // desde arriba
+    .to(M,{tilt:.05,lift:0,near:1.4,spin:1.1,duration:2.8,ease:e})              // gira y gana perspectiva
+    .to(M,{tilt:-.3,lift:-.3,near:.5,spin:.35,duration:2.6,ease:e})           // gira más hacia abajo
+    .to(M,{tilt:.12,lift:0,near:0,spin:.2,duration:2.2,ease:e});                // vuelve al centro
+}
+function entrar(){
+  if(bucle){bucle.kill();bucle=null}
+  var M=S.mov;
+  gsap.fromTo(M,{tilt:1.1,lift:7,near:-2,spin:2.5},{tilt:.12,lift:0,near:0,spin:.2,duration:1.8,ease:'power3.out',
+    onComplete:function(){if(!reduce){bucle=crearBucle()}}});
+}
+function elegir(i){
+  if(i===S.cur)return;
+  var cambiar=function(){S.cur=i;S.ang=.5;S.vel=0;if(R.poner)R.poner(i);else sin3D();pintarInfo();if(window.gsap&&!reduce)entrar()};
+  if(window.gsap&&!reduce&&R.poner){
+    if(bucle){bucle.kill();bucle=null}
+    gsap.to(S.mov,{lift:7,tilt:-.8,spin:3,duration:.6,ease:'power2.in',onComplete:cambiar});
+  }else cambiar();
+}
+$('#dtabs').addEventListener('click',function(e){var b=e.target.closest('.dtab');if(b)elegir(+b.dataset.i)});
+addEventListener('keydown',function(e){
+  if(e.key==='ArrowLeft'){S.ang+=.35;S.idle=0}
+  else if(e.key==='ArrowRight'){S.ang-=.35;S.idle=0}
+});
+
+/* ================= ARRANQUE ================= */
+var desdeUrl=COCTELES.findIndex(function(d){return '#'+d.id===location.hash});
+S.cur=desdeUrl>=0?desdeUrl:0;
+pintarInfo();
+if(init3D()){
+  R.poner(S.cur);R.frame();
+  if(window.gsap&&!reduce)entrar();
+}
+})();
+</script>
+</body>
+</html>

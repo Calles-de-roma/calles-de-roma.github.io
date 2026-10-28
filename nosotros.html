@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="es" class="sin-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Nosotros · Calles de Roma</title>
+  <meta name="description" content="La historia de Calles de Roma, Restaurante F.S.: una familia, la cocina mediterránea y de autor y una mesa siempre preparada en El Caracol.">
+  <meta name="theme-color" content="#0b0a08">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230b0a08'/%3E%3Ccircle cx='32' cy='32' r='27' fill='none' stroke='%23c9a45c' stroke-width='2'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-family='Georgia,serif' font-size='24' fill='%23e8cf8f'%3ECR%3C/text%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ================= NAVEGACIÓN ================= -->
+  <header class="nav" id="nav">
+    <div class="contenedor">
+      <a href="index.html" class="marca" aria-label="Calles de Roma, inicio">
+        <span class="marca__nombre oro-texto">Calles de Roma</span>
+        <span class="marca__sub">Restaurante F.S.</span>
+      </a>
+      <button class="nav__toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav__enlaces" id="menu">
+        <li><a href="index.html#carta">Carta</a></li>
+        <li><a href="index.html#cafeteria">Cafetería</a></li>
+        <li><a href="index.html#di-trevi">Di Trevi</a></li>
+        <li><a href="nosotros.html" class="activo" aria-current="page">Nosotros</a></li>
+        <li><a href="index.html#ubicacion">Ubicación</a></li>
+        <li><a href="index.html#reservas" class="boton">Reservar</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <!-- ================= HERO ================= -->
+    <section class="hero hero--corto hero--foto">
+      <img class="hero__fondo" src="img/local/comedor.jpg" alt="" width="750" height="562" fetchpriority="high">
+      <div class="hero__marco" aria-hidden="true"></div>
+      <div class="hero__contenido">
+        <img class="hero__coliseo" src="img/coliseo.jpg" alt="" width="470" height="238">
+        <p class="antetitulo" style="animation:subir 1.2s .2s both">Quiénes somos</p>
+        <h1>Nuestra <span class="oro-texto">historia</span></h1>
+        <p class="hero__lema">Una familia, una ciudad, una mesa</p>
+      </div>
+      <a href="#historia" class="scroll-indicador" aria-label="Bajar a la historia">Leer<i></i></a>
+    </section>
+
+    <!-- ================= HISTORIA ================= -->
+    <section class="seccion seccion--borde" id="historia">
+      <div class="contenedor historia">
+        <div class="historia__texto revelar">
+          <p class="antetitulo">La historia</p>
+          <h2 class="titulo-seccion">De un sueño <em>a una mesa</em></h2>
+          <p class="capitular">Calles de Roma nace de un sueño de familia: abrir en El Caracol una casa donde se come bien y sin prisas, con la cocina mediterránea como punto de partida y la firma propia de quien está entre fogones.</p>
+          <p>¿Por qué Roma? Porque durante siglos fue el corazón del Mediterráneo, la ciudad a la que llegaban el aceite, el vino, el pescado y las especias de todas sus orillas. Nuestras calles recorren ese mismo mapa: del arroz marinero a la brasa, de la huerta a los asados lentos, con algún guiño a nuestras raíces.</p>
+          <p>Las iniciales F.S. que firman nuestro nombre son las de quien lo hizo posible. Detrás de ellas hay años de oficio y la convicción de que comer bien es una de las formas más sinceras de cuidar a los demás. Hoy abrimos cada día, del primer café de la mañana al tardeo, con la misma ilusión del primer día.</p>
+          <p class="firma">— F.S., fundador</p>
+        </div>
+        <figure class="foto-marco foto-marco--cartel revelar" style="--retraso:.15s">
+          <img src="img/local/cartel-entrada.jpg" alt="Cartel de la entrada del bar: Calles de Roma FS, bar restaurante, con el Coliseo y una columna en dorado sobre negro" width="1600" height="800" loading="lazy">
+          <figcaption>El cartel de nuestra entrada</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ================= PILARES ================= -->
+    <section class="seccion seccion--carbon seccion--borde">
+      <div class="contenedor">
+        <div class="cabecera-seccion revelar">
+          <p class="antetitulo">Nuestros valores</p>
+          <h2 class="titulo-seccion">Tres <em>pilares</em></h2>
+          <p class="intro-seccion">Como las columnas del Coliseo, todo lo que hacemos se sostiene sobre tres principios.</p>
+        </div>
+        <div class="pilares">
+          <article class="pilar revelar">
+            <span class="pilar__num oro-texto">I</span>
+            <h3>Tradición</h3>
+            <p>Recetas que han pasado de generación en generación. Respetamos los tiempos, las técnicas y los sabores de siempre: un arroz con buen fondo, un asado que se hace sin prisa, una brasa bien llevada.</p>
+          </article>
+          <article class="pilar revelar" style="--retraso:.12s">
+            <span class="pilar__num oro-texto">II</span>
+            <h3>Autor</h3>
+            <p>Sobre esa base, platos con firma propia: el arroz «Marea Negra», el foie con piña y regañás o la Isla Canela. Producto de temporada, aceite de oliva virgen extra y lo mejor del mercado.</p>
+          </article>
+          <article class="pilar revelar" style="--retraso:.24s">
+            <span class="pilar__num oro-texto">III</span>
+            <h3>Hospitalidad</h3>
+            <p>Que cada cliente se sienta en casa. Un servicio cercano y atento, sin prisas, que convierte una comida en un recuerdo.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= LÍNEA DE TIEMPO ================= -->
+    <section class="seccion seccion--borde">
+      <div class="contenedor">
+        <div class="cabecera-seccion revelar">
+          <p class="antetitulo">El camino</p>
+          <h2 class="titulo-seccion">El <em>camino</em></h2>
+        </div>
+        <ol class="linea-tiempo">
+          <li class="hito revelar">
+            <span class="hito__fecha">El origen</span>
+            <h3>Una idea</h3>
+            <p>Una mesa larga, buena compañía y la idea de que la cocina mediterránea podía tener firma propia. Ahí empezó todo.</p>
+          </li>
+          <li class="hito revelar">
+            <span class="hito__fecha">La preparación</span>
+            <h3>Recetas y proveedores</h3>
+            <p>Meses probando masas, salsas y vinos, y buscando a los productores que comparten nuestra forma de entender la cocina.</p>
+          </li>
+          <li class="hito revelar">
+            <span class="hito__fecha">El local</span>
+            <h3>Un rincón de Roma</h3>
+            <p>Transformamos nuestro espacio en El Caracol: negro, dorado y luz cálida, y un rincón reservado, Di Trevi, para las ocasiones especiales.</p>
+          </li>
+          <li class="hito revelar">
+            <span class="hito__fecha">2026</span>
+            <h3>Apertura</h3>
+            <p>Calles de Roma abre sus puertas. Siete días a la semana, del primer café al tardeo, le esperamos.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================= CITA ================= -->
+    <section class="cita" aria-label="Cita">
+      <blockquote class="revelar">
+        <p>«Buena comida,<br>mejores momentos»</p>
+        <cite>El lema de la casa</cite>
+      </blockquote>
+    </section>
+
+    <!-- ================= FILOSOFÍA ================= -->
+    <section class="seccion">
+      <div class="contenedor filosofia revelar">
+        <p class="antetitulo">Filosofía</p>
+        <h2 class="titulo-seccion">La filosofía <em>de la casa</em></h2>
+        <div class="ornamento" aria-hidden="true"><span></span><svg viewBox="0 0 18 18"><path d="M9 1 17 9 9 17 1 9Z" fill="none" stroke="currentColor"/></svg><span></span></div>
+        <p>Creemos en la cocina sin artificios: pocos ingredientes, de la mejor calidad, tratados con respeto. Creemos en las sobremesas largas, en el pan para mojar la salsa y en el café que cierra una buena comida.</p>
+        <p>Calles de Roma no es solo un restaurante. Es el lugar donde se celebra un cumpleaños, se cierra un negocio, se pide la mano o simplemente se disfruta de un martes cualquiera. Y todas esas historias son, desde hoy, también la nuestra.</p>
+      </div>
+    </section>
+
+    <!-- ================= LLAMADA ================= -->
+    <section class="llamada">
+      <div class="contenedor revelar">
+        <p class="antetitulo">Su mesa está lista</p>
+        <h2 class="titulo-seccion">Le <em>esperamos</em></h2>
+        <p class="intro-seccion">Lunes a domingo · 07:00 – 22:00<br>Comidas 12:30 – 16:00 · Tardeo 19:00 – 21:30</p>
+        <div class="hero__botones">
+          <a href="index.html#reservas" class="boton boton--lleno">Reservar mesa</a>
+          <a href="index.html#carta" class="boton">Ver la carta</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="pie">
+    <div class="contenedor">
+      <div class="pie__rejilla">
+        <div>
+          <img class="pie__logo" src="img/logo.jpg" alt="Calles de Roma" width="925" height="630" loading="lazy">
+          <p>Cocina mediterránea y de autor en El Caracol.</p>
+          <div class="redes">
+            <a href="#" data-dato="instagram" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></svg></a>
+            <a href="#" data-dato="facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8Z"/></svg></a>
+            <a href="#" data-dato="tripadvisor" aria-label="Reseñas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9L12 3Z"/></svg></a>
+          </div>
+        </div>
+        <div>
+          <h4>Explorar</h4>
+          <ul>
+            <li><a href="index.html#carta">Carta</a></li>
+            <li><a href="index.html#cafeteria">Cafetería</a></li>
+            <li><a href="index.html#di-trevi">Zona Di Trevi</a></li>
+            <li><a href="index.html#galeria">Galería</a></li>
+            <li><a href="nosotros.html">Nosotros</a></li>
+            <li><a href="index.html#reservas">Reservas</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Horario</h4>
+          <ul>
+            <li>Lunes a domingo · 07:00 – 22:00</li>
+            <li>Comidas · 12:30 – 16:00</li>
+            <li>Tardeo · 19:00 – 21:30</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contacto</h4>
+          <ul>
+            <li data-dato="direccion">El Caracol</li>
+            <li><a href="tel:" data-dato="telefono">+34 677 94 46 84</a></li>
+            <li><a href="mailto:" data-dato="email">callesderomacaracol@gmail.com</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pie__legal">
+        <span>© <span data-anio>2026</span> Calles de Roma · Restaurante F.S.</span>
+        <span class="pie__enlaces"><a href="aviso-legal.html">Aviso legal</a> · <a href="privacidad.html">Privacidad</a> · <a href="cookies.html">Cookies</a> · <a href="#" data-configurar-cookies>Configurar cookies</a></span>
+        <span>Hecho con cariño</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
