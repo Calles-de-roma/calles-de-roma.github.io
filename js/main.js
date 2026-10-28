@@ -7,13 +7,13 @@ const CONFIG = {
   telefono: "+34 677 94 46 84",         // móvil de reservas (llamadas)
   whatsapp: "34677944684",               // solo números con prefijo, p. ej. "34600000000". Vacío = sin WhatsApp
   email: "callesderomacaracol@gmail.com",
-  direccion: "El Caracol",
-  mapa: "El Caracol",                    // lo que se busca en Google Maps (mejor la dirección completa)
+  direccion: "C.C. El Caracol · C. de Marceliano Isábal, 3 · 50004 Zaragoza",
+  mapa: "Centro Comercial El Caracol, Calle de Marceliano Isábal 3, 50004 Zaragoza", // lo que se busca en Google Maps
   // Datos legales (aviso legal y privacidad). Mientras estén vacíos se ve el aviso «pendiente».
-  titular: "",                           // nombre y apellidos o razón social
-  nif: "",                               // NIF / CIF
-  domicilio: "",                         // domicilio fiscal completo
-  registro: "",                          // solo si es una sociedad: datos del Registro Mercantil
+  titular: "Frumosu Sorin",              // nombre y apellidos o razón social
+  nif: "Z3417668B",                      // NIF / NIE / CIF
+  domicilio: "C. de Marceliano Isábal, 3 (C.C. El Caracol), 50004 Zaragoza", // domicilio completo
+  registro: "",                          // solo si es una sociedad (ahora autónomo: fila quitada de aviso-legal y privacidad)
   instagram: "#",
   facebook: "#",
   tripadvisor: "#",
