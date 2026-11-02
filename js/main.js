@@ -1,5 +1,5 @@
 /* =========================================================
-   Calles de Roma · Restaurante F.S.
+   Calles de Roma · Restaurante F.S.M.
    ---------------------------------------------------------
    DATOS DEL NEGOCIO: cambia aquí y se actualiza toda la web.
    ========================================================= */
