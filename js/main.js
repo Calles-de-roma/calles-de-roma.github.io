@@ -17,8 +17,8 @@ const CONFIG = {
   instagram: "#",
   facebook: "#",
   tripadvisor: "#",
-  apertura: 7,                           // 07:00
-  cierre: 22                             // 22:00
+  apertura: "07:30",
+  cierre: "23:30"
 };
 
 document.documentElement.classList.remove("sin-js");
@@ -132,12 +132,13 @@ if (estado) {
   const actualizarEstado = () => {
     const ahora = new Date();
     const h = ahora.getHours() + ahora.getMinutes() / 60;
-    const abierto = h >= CONFIG.apertura && h < CONFIG.cierre;
+    const enHoras = (hora) => { const [hh, mm] = hora.split(":").map(Number); return hh + mm / 60; };
+    const abierto = h >= enHoras(CONFIG.apertura) && h < enHoras(CONFIG.cierre);
     estado.classList.toggle("abierto", abierto);
     estado.classList.toggle("cerrado", !abierto);
     estado.querySelector("span").textContent = abierto
-      ? "Abierto ahora · cierra a las " + String(CONFIG.cierre).padStart(2, "0") + ":00"
-      : "Cerrado · abrimos a las " + String(CONFIG.apertura).padStart(2, "0") + ":00";
+      ? "Abierto ahora · cierra a las " + CONFIG.cierre
+      : "Cerrado · abrimos a las " + CONFIG.apertura;
   };
   actualizarEstado();
   setInterval(actualizarEstado, 60000);
